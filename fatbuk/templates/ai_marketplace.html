@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Fatbuk - Mawketpwace{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+
+<div class="marketplace-split">
+    <!-- Left: Chat with AI -->
+    <div class="market-chat">
+        <h2>🧠 Chat with Mawketpwace</h2>
+        <small>
+            Please don't overuse me — I don’t want to make this a paid feature yet. It costs about $1 to run this 50
+            times.
+        </small>
+
+        {% if error %}
+        <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        <div class="chat-box">
+            {% for msg in chat %}
+            <div class="chat-msg {{ msg.role }}">
+                <strong>{{ msg.role }}:</strong> {{ msg.content }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="POST" class="chat-input">
+            <input type="text" name="message" placeholder="What are you looking for?" required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <!-- Right: Listings -->
+    <div class="market-listings">
+        <h2>🛒 Suggested Listings</h2>
+        <div class="listing-grid">
+            {% if listings %}
+            {% for item in listings %}
+            <div class="listing-card">
+                <a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>No results yet. Ask me about something you're shopping for!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

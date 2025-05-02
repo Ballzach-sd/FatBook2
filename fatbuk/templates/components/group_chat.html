@@ -1,0 +1,5 @@
+{% for msg in messages %}
+<div class="chat-message">
+    <strong>{{ msg.user.username }}:</strong> {{ msg.content }}
+</div>
+{% endfor %}

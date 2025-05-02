@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Fatbuk - Store{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/store.css') }}">
+
+<div class="store-container">
+    <h2>🛒 The Fatbuk Store</h2>
+
+    {% if new_key %}
+    <div class="success-box">
+        ✅ You successfully purchased an invite key:
+        <code>{{ new_key }}</code>
+        <button onclick="navigator.clipboard.writeText('{{ new_key }}')">📋 Copy</button>
+    </div>
+    {% endif %}
+
+
+    <p class="balance">You currently have <strong>{{ user.fatbucks }}</strong> 💰 Fatbux</p>
+
+    <!-- What can you do with Fatbux -->
+    <div class="store-section">
+        <h3>🎁 What Can I Spend Fatbux On?</h3>
+        <ul class="usage-list">
+            <li>🥇 <strong>Give Medals</strong> to posts (50 Fatbux)</li>
+            <li>🔇 <strong>Mute Users</strong> for 5 minutes (100 Fatbux, once/hour)</li>
+            <li>🛠 More items coming soon...</li>
+        </ul>
+    </div>
+
+    <!-- Buy Fatbux -->
+    <div class="store-section">
+        <h3>💳 Buy Fatbux</h3>
+
+        <form method="POST" action="{{ url_for('buy_fatbux', bundle_id=1) }}">
+            <button type="submit" class="buy-button">
+                💳 Buy 1000 Fatbux for $1.99
+            </button>
+        </form>
+
+        <form method="POST" action="{{ url_for('buy_fatbux', bundle_id=2) }}">
+            <button type="submit" class="buy-button">
+                💳 Buy 5000 Fatbux for $7.99 <span class="discount">— Save 19%</span>
+            </button>
+        </form>
+
+        <form method="POST" action="{{ url_for('buy_fatbux', bundle_id=3) }}">
+            <button type="submit" class="buy-button best-deal">
+                💳 Buy 10000 Fatbux for $9.99 <span class="discount">— Save 50%</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Invite Keys Section -->
+    <div class="store-section">
+        <h3>📩 Invite Access Keys</h3>
+        <p class="invite-info">
+            Invite new users to Fatbuk with a one-time access key. Each key is valid for one registration.
+        </p>
+
+        <form method="POST" action="{{ url_for('buy_invite') }}">
+            <button type="submit" class="buy-button">💳 Buy Access Key ($2.50)</button>
+        </form>
+
+        <ul class="key-list">
+            {% for key in keys %}
+            <li class="key-card">
+                <code>{{ key.key }}</code>
+                {% if key.used %}
+                <span class="status used">Used</span>
+                {% else %}
+                <span class="status unused">Unused</span>
+                {% endif %}
+            </li>
+            {% else %}
+            <li>No keys yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

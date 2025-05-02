@@ -1,0 +1,174 @@
+.store-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 2rem;
+    color: #c9d1d9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.store-container h2 {
+    font-size: 2rem;
+    color: #58a6ff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.balance {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    background-color: #0d1117;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+}
+
+.store-section {
+    margin-bottom: 2.5rem;
+}
+
+.store-section h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #c9d1d9;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 0.25rem;
+}
+
+.usage-list,
+.key-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.usage-list li {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Purchase Buttons */
+.buy-button {
+    display: block;
+    width: 100%;
+    background-color: #238636;
+    color: white;
+    padding: 1rem;
+    font-size: 1.05rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    text-align: left;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.buy-button:hover {
+    background-color: #2ea043;
+    transform: scale(1.01);
+}
+
+.buy-button.best-deal {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #ffd70050;
+    position: relative;
+}
+
+.buy-button.best-deal::after {
+    content: "★ Best Deal";
+    position: absolute;
+    top: -12px;
+    right: 12px;
+    background-color: #FFD700;
+    color: #0d1117;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.discount {
+    color: #2ea043;
+    font-weight: bold;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+}
+
+.invite-info {
+    color: #8b949e;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.key-card {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.status {
+    font-weight: bold;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.status.unused {
+    background-color: #1c7e3a;
+    color: white;
+}
+
+.status.used {
+    background-color: #f85149;
+    color: white;
+}
+
+.success-box {
+    background-color: #0d1117;
+    border: 1px solid #2ea043;
+    color: #2ea043;
+    font-weight: bold;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.success-box code {
+    background-color: #161b22;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.success-box button {
+    background: none;
+    color: #2ea043;
+    border: 1px solid #2ea043;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.success-box button:hover {
+    background-color: #2ea043;
+    color: #0d1117;
+}

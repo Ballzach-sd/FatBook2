@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Fatbuk - Profile{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+
+<div class="profile-container">
+    <h2>Chonkfile Settings</h2>
+
+    <div class="avatar-preview">
+        <img src="{{ url_for('static', filename='avatars/' + (user.profile_picture or 'default-avatar.png')) }}"
+            alt="Avatar">
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label for="username">Username:</label>
+        <input type="text" name="username" value="{{ user.username }}" required>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" value="{{ user.email }}" required>
+
+        <label for="avatar">New Profile Picture:</label>
+        <input type="file" name="avatar">
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Purchase Successful{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>✅ Purchase Complete!</h2>
+    <p>You now have <strong>{{ user.fatbucks }}</strong> 💰 Fatbux.</p>
+    <a href="{{ url_for('store') }}" class="back-button">⬅ Back to Store</a>
+</div>
+{% endblock %}

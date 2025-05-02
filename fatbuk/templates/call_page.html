@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}In Call with {{ friend.username }}{% endblock %}
+
+{% block content %}
+<div class="call-container">
+    <h2>🔊 In Call with {{ friend.username }}</h2>
+    <p>This is a placeholder for voice or video communication.</p>
+
+    <!-- Replace this with WebRTC/WebSocket later -->
+    <div class="call-ui">
+        <button class="end-call" onclick="window.location.href='/voice'">🚪 End Call</button>
+    </div>
+</div>
+{% endblock %}

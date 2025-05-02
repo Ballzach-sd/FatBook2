@@ -1,0 +1,129 @@
+/* ========== NAVBAR ========== */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #161b22;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #30363d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo a {
+    font-size: 1.5rem;
+    color: #58a6ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+}
+
+/* Links */
+.nav-links a {
+    color: #c9d1d9;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #58a6ff;
+}
+
+/* ========== DROPDOWN USER ========== */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    background-color: #0d1117;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-toggle:hover {
+    background-color: #21262d;
+}
+
+.dropdown-toggle img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #30363d;
+}
+
+.dropdown-toggle span {
+    color: #c9d1d9;
+    font-weight: bold;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.dropdown-toggle .caret {
+    width: 10px;
+    height: 6px;
+    transition: transform 0.2s ease;
+}
+
+.dropdown:hover .dropdown-toggle .caret {
+    transform: rotate(180deg);
+}
+
+/* ========== MENU ========== */
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 72px;
+    right: 0;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    min-width: 140px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdown-menu li {
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-menu li a {
+    display: block;
+    width: 100%;
+    color: #c9d1d9;
+    font-weight: normal;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #21262d;
+    color: #58a6ff;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

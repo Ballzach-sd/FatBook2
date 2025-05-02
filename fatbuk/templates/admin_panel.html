@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Fatbuk - Admin Panel{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_panel.css') }}">
+
+<div class="admin-container">
+    <h2>🛠 Admin Panel</h2>
+
+    <h3>Generate New Access Key</h3>
+    <form method="POST" action="{{ url_for('admin_panel') }}">
+        <button type="submit">Generate New Key</button>
+    </form>
+
+    <h4>Access Keys</h4>
+    <ul>
+        {% for key in keys %}
+        <li>
+            {{ key.key }}
+            {% if key.used %}
+            <span style="color:#f85149;">(used)</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Users</h3>
+    <ul>
+        {% for u in users %}
+        <li>
+            <strong>
+                <a href="{{ url_for('user_profile', user_id=u.id) }}">
+                    {{ u.username }}
+                </a>
+            </strong> ({{ u.email }})
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Recent Posts</h3>
+    <ul>
+        {% for p in posts %}
+        <li>
+            <strong>
+                <a href="{{ url_for('user_profile', user_id=p.user.id) }}">
+                    {{ p.user.username }}
+                </a>
+            </strong>: {{ p.content[:80] }}{% if p.content|length > 80 %}...{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

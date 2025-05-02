@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Fatbuk - Sign In{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<div class="auth-container">
+    <div class="form-section">
+        <h2>Login</h2>
+        <form method="post" action="{{ url_for('login') }}">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Register</h2>
+        <form method="post" action="{{ url_for('register') }}">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="access_key" placeholder="Access Key" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

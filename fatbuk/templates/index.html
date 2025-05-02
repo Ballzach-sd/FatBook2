@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Fatbuk - Home{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+<!-- Scrollable Feed Container -->
+<div class="feed-container" id="feed">
+
+    <!-- Posts -->
+    {% for post in posts %}
+    <div class="post-card" id="post-{{ post.id }}">
+        <div class="post-header">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='avatars/' + (post.user.profile_picture or 'default-avatar.png')) }}"
+                    alt="Avatar">
+            </div>
+            <div class="post-user-meta">
+                <strong>
+                    <a href="{{ url_for('user_profile', user_id=post.user.id) }}">
+                        {{ post.user.username }}
+                    </a>
+                </strong>
+                <small>{{ post.created_at.strftime('%b %d, %Y at %I:%M %p') }}</small>
+                {% if post.user.muted_until and post.user.muted_until > now() %}
+                <span class="muted-tag">🔇 Muted</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="post-content">
+            <p>{{ post.content }}</p>
+            {% if post.image_url %}
+            <div class="post-image-container">
+                <img src="{{ url_for('static', filename='uploads/' + post.image_url) }}">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Reactions + Fatbux actions -->
+        <div class="post-actions">
+            <button onclick="react({{ post.id }}, 'like')">👍 {{ post.likes }}</button>
+            <button onclick="react({{ post.id }}, 'dislike')">👎 {{ post.dislikes }}</button>
+            <button onclick="location.href='/post_action/{{ post.id }}/medal'">🥇 {{ post.medals }}</button>
+            <button onclick="location.href='/post_action/{{ post.id }}/mute'">🔇 Mute</button>
+        </div>
+
+        <!-- Comments -->
+        <div class="comments">
+            {% for c in post.comments %}
+            <div class="comment"><strong>{{ c.user.username }}</strong>: {{ c.content }}</div>
+            {% endfor %}
+            <form onsubmit="return submitComment(event, {{ post.id }})">
+                <input type="text" name="comment" placeholder="Write a comment..." required
+                    onkeydown="checkEnter(event, {{ post.id }})">
+                <button type="submit">Comment</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Post Composer -->
+{% if user.muted_until and user.muted_until > now() %}
+<div class="muted-tag">🔇 You are muted and cannot create posts.</div>
+{% else %}
+<div class="composer-card">
+    <form method="POST" action="{{ url_for('create_post') }}" enctype="multipart/form-data">
+        <textarea name="content" placeholder="What's on your mind, {{ user.username }}?" required></textarea>
+        <input type="file" name="image">
+        <div class="composer-actions">
+            <button type="submit">Post</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+
+<!-- JavaScript for Feed Behavior -->
+<script>
+    function scrollFeedToBottom() {
+        const feed = document.querySelector('.feed-container');
+        if (feed) feed.scrollTop = 0;
+    }
+
+    function react(postId, action) {
+        fetch(`/like/${postId}/${action}`).then(() => location.reload());
+    }
+
+    function submitComment(e, postId) {
+        e.preventDefault();
+        const form = e.target;
+        const data = new FormData(form);
+        fetch(`/comment/${postId}`, {
+            method: 'POST',
+            body: data
+        }).then(() => location.reload());
+        return false;
+    }
+
+    function checkEnter(e, postId) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitComment(e, postId);
+        }
+    }
+
+    // Scroll on load
+    window.onload = scrollFeedToBottom;
+    setTimeout(scrollFeedToBottom, 300);
+
+    // Auto-refresh every 10s
+    setInterval(() => {
+        fetch(window.location.href)
+            .then(res => res.text())
+            .then(html => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const newFeed = doc.querySelector('#feed');
+                document.querySelector('#feed').innerHTML = newFeed.innerHTML;
+                scrollFeedToBottom();
+            });
+    }, 10000);
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Fatbuk - Messages{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/messages.css') }}">
+
+<div class="messages-page">
+    <h2>💬 Direct Messages</h2>
+    <ul class="dm-list">
+        {% for f in friends %}
+        <li>
+            <a href="{{ url_for('chat', friend_id=f.id) }}">{{ f.username }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

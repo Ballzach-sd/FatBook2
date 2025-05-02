@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/groups.css') }}">
+
+<div class="group-room">
+    <div class="room-header">
+        <div class="room-header-main">
+            <div>
+                <h2>🏠 {{ group.name }} Room</h2>
+                <p class="group-description">{{ group.description }}</p>
+                <a href="{{ url_for('groups') }}" class="back-button">⬅ Back to Gwoup List</a>
+            </div>
+            <div class="section-box">
+                <h3>➕ Invite to Gwoup</h3>
+                <form method="POST" action="{{ url_for('invite_to_group', group_id=group.id) }}" class="invite-form">
+                    <input type="text" name="username" placeholder="Username to invite" required>
+                    <button type="submit">Invite</button>
+                </form>
+            </div>
+            <div class="room-members section-box">
+                <h3>👥 Members</h3>
+                <ul class="member-list">
+                    {% for user in members %}
+                    <li>{{ user.username }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="room-sections">
+        <!-- Left: Events -->
+        <div class="group-sidebar">
+            <div class="event-section section-box">
+                <h3>📅 Events</h3>
+                <ul class="event-list">
+                    {% for e in events %}
+                    <li>
+                        <strong>{{ e.title }}</strong><br>
+                        <span class="event-date">{{ e.date.strftime("%b %d, %Y") }}</span><br>
+                        <span>{{ e.description }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <form method="POST" action="{{ url_for('add_group_event', group_id=group.id) }}" class="event-form">
+                    <input type="text" name="title" placeholder="Event Title" required>
+                    <input type="date" name="date" required>
+                    <textarea name="description" placeholder="Event Description"></textarea>
+                    <button type="submit">Add Event</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Group Chat -->
+        <div class="group-chat section-box">
+            <h3>💬 Group Chat</h3>
+            <div class="chat-box" id="chat-box">
+                {% include "components/group_chat_feed.html" %}
+            </div>
+            <form method="POST" action="{{ url_for('send_group_message', group_id=group.id) }}" class="chat-form">
+                <input type="text" name="message" placeholder="Say something..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function scrollToBottom() {
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    function refreshChat() {
+        fetch("{{ url_for('chat_feed', group_id=group.id) }}")
+            .then(res => res.text())
+            .then(html => {
+                const chatBox = document.getElementById("chat-box");
+                const wasAtBottom = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 10;
+                chatBox.innerHTML = html;
+                if (wasAtBottom) {
+                    scrollToBottom();
+                }
+            });
+    }
+
+    window.onload = () => {
+        refreshChat();
+        scrollToBottom();
+    };
+
+    setInterval(refreshChat, 5000);
+</script>
+
+
+{% endblock %}

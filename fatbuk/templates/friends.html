@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Fatbuk - Friends{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/friends.css') }}">
+
+<div class="friends-container">
+    <h2>👥 FlabFriends</h2>
+
+    <section>
+        <h3>Your Friends</h3>
+        {% if confirmed %}
+        <ul>
+            {% for f in all_users if f.id in confirmed %}
+            <li class="friend">
+                <a href="{{ url_for('user_profile', user_id=f.id) }}">{{ f.username }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No friends yet. Go make some chonky connections!</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h3>Pending Requests</h3>
+        <ul>
+            {% for f in all_users %}
+            {% if f.id in received %}
+            <li class="friend">
+                <a href="{{ url_for('user_profile', user_id=f.id) }}">{{ f.username }}</a>
+                <a href="{{ url_for('accept_friend', friend_id=f.id) }}">✅ Accept</a>
+            </li>
+            {% elif f.id in sent %}
+            <li class="friend">
+                <a href="{{ url_for('user_profile', user_id=f.id) }}">{{ f.username }}</a>
+                <span class="sent">(Request Sent)</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h3>People You May Know</h3>
+        <ul>
+            {% for f in all_users %}
+            {% if f.id not in sent and f.id not in received and f.id not in confirmed %}
+            <li class="friend">
+                <a href="{{ url_for('user_profile', user_id=f.id) }}">{{ f.username }}</a>
+                <a href="{{ url_for('add_friend', friend_id=f.id) }}">➕ Add</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+{% endblock %}

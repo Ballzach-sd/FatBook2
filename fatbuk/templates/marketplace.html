@@ -1,0 +1,14 @@
+<div class="market-listings">
+    <h2>🛒 Suggested Listings</h2>
+    <div class="listing-grid">
+        {% if listings %}
+        {% for listing in listings %}
+        <div class="listing-card">
+            <a href="{{ listing.url }}" target="_blank">{{ listing.title }}</a>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No listings yet. Ask me about something!</p>
+        {% endif %}
+    </div>
+</div>

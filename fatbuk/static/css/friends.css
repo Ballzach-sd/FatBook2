@@ -1,0 +1,65 @@
+.friends-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: #161b22;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+}
+
+.friends-container h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #58a6ff;
+}
+
+.friends-container section {
+    margin-bottom: 2rem;
+}
+
+.friends-container h3 {
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.friends-container ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.friend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+}
+
+.friend a {
+    background-color: #238636;
+    color: white;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+
+.friend a:hover {
+    background-color: #2ea043;
+}
+
+.friend .sent {
+    color: #8b949e;
+    font-style: italic;
+    font-size: 0.85rem;
+}

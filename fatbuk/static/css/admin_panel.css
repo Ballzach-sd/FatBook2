@@ -1,0 +1,58 @@
+.admin-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    color: #c9d1d9;
+}
+
+.admin-container h2 {
+    font-size: 2rem;
+    color: #58a6ff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.admin-container h3, .admin-container h4 {
+    margin-top: 2rem;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 0.4rem;
+    color: #c9d1d9;
+}
+
+.admin-container form {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-container button {
+    padding: 0.5rem 1.25rem;
+    background-color: #238636;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.admin-container button:hover {
+    background-color: #2ea043;
+}
+
+.admin-container ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.admin-container li {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+}
