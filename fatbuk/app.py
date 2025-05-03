@@ -1,44 +1,47 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-from datetime import datetime
 import os
-
-import dotenv
-import requests
 import json
 import sys
-import os
-from dotenv import load_dotenv
+import time
 import re
+import secrets
+from datetime import datetime, timedelta
+from functools import wraps
+
+# Third-party imports
+import dotenv
+import requests
+import stripe
+from flask import (Flask, render_template, request, redirect, url_for, session,
+                   jsonify, abort, render_template_string)
+from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit, join_room
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-import time
-
-from flask_socketio import SocketIO, emit, join_room
+from dotenv import load_dotenv
 
 
 # Load environment variables from .env file
+# Use load_dotenv() directly from dotenv package
 load_dotenv(override=True)
 
-import stripe
-
+# Initialize Stripe (API key will be updated before each request)
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-
 
 # --- Config ---
 AGENT_ENDPOINT = os.getenv("ENDPOINT_URL")
-AGENT_ACCESS_KEY = os.getenv("ACCESS_KEY")  # Replace with your actual access key
-USER_MESSAGE = "Hey how are you?"
+AGENT_ACCESS_KEY = os.getenv("ACCESS_KEY")
+USER_MESSAGE = "Hey how are you?" # Default message, consider removing if not used
 
 
 # --- Step 1: Send message to agent ---
 def get_agent_response(message):
+    """Sends a message to the configured AI agent and returns the response."""
     url = f"{AGENT_ENDPOINT}/api/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
@@ -131,14 +134,20 @@ def search_facebook_marketplace(query):
 
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = "supersecretkey" # Consider using a more secure, environment-variable based secret key
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+# SocketIO setup
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading") # Ensure 'threading' is appropriate
 
-from functools import wraps
-from flask import abort
+# Update Stripe key before each request
+@app.before_request
+def update_stripe_key():
+    """Reload .env and update Stripe key before each request."""
+    load_dotenv(override=True) # Reload env variables
+    stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
+# Decorator for admin-only routes
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -267,9 +276,6 @@ class GroupMessage(db.Model):
     user = db.relationship("User")
 
 
-import secrets
-
-
 class CallRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     caller_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -333,19 +339,53 @@ def ai_marketplace():
     )
 
 
-import secrets
-
-
 @app.route("/buy_invite", methods=["POST"])
 def buy_invite():
     if "user_id" not in session:
         return redirect(url_for("auth"))
 
-    new_key = secrets.token_hex(16)
-    db.session.add(AccessKey(key=new_key, creator_id=session["user_id"]))
-    db.session.commit()
+    session_stripe = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "Fatbuk Invite Key",
+                    },
+                    "unit_amount": 250,  # 2.50 in cents
+                },
+                "quantity": 1,
+            }
+        ],
+        mode="payment",
+        success_url=url_for("invite_success", _external=True)
+        + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=url_for("store", _external=True),
+        metadata={"user_id": session["user_id"]},
+    )
 
-    return redirect(url_for("store"))  # ✅ NEW
+    return redirect(session_stripe.url, code=303)
+
+
+@app.route("/invite_success")
+def invite_success():
+    session_id = request.args.get("session_id")
+    if not session_id:
+        return "Missing session ID", 400
+
+    checkout_session = stripe.checkout.Session.retrieve(session_id)
+
+    if checkout_session.payment_status == "paid":
+        user_id = checkout_session.metadata.get("user_id")
+        new_key = secrets.token_hex(16)
+        db.session.add(AccessKey(key=new_key, creator_id=user_id))
+        db.session.commit()
+        return render_template(
+            "store.html", success="Invite key purchased successfully!"
+        )
+
+    return redirect(url_for("store"))
 
 
 @app.route("/store")
@@ -439,153 +479,10 @@ def inject_user():
     return {"user": None}
 
 
-from datetime import datetime
-
-
 @app.context_processor
 def inject_now():
     return {"now": datetime.utcnow}
 
-
-@app.route("/voice")
-def voice_chat():
-    if "user_id" not in session:
-        return redirect(url_for("auth"))
-
-    user_id = session["user_id"]
-
-    # Get confirmed friends
-    relationships = Friend.query.filter(
-        ((Friend.user_id == user_id) | (Friend.friend_id == user_id))
-        & (Friend.accepted == True)
-    ).all()
-    friend_ids = [
-        f.friend_id if f.user_id == user_id else f.user_id for f in relationships
-    ]
-    friends = User.query.filter(User.id.in_(friend_ids)).all()
-
-    return render_template("voice_chat.html", friends=friends)
-
-
-@socketio.on("join")
-def handle_join(data):
-    room = data["room"]
-    print("👥 Joined room:", room)
-    join_room(room)
-    emit("new-user", {}, to=room, skip_sid=request.sid)
-
-
-@socketio.on("signal")
-def handle_signal(data):
-    emit("signal", data, to=data["room"], skip_sid=request.sid)
-
-
-@app.route("/call/<int:friend_id>", methods=["POST"])
-def start_call(friend_id):
-    if "user_id" not in session:
-        return "", 403
-
-    # Remove old calls
-    CallRequest.query.filter_by(caller_id=session["user_id"]).delete()
-    db.session.commit()
-
-    room_id = secrets.token_hex(8)
-    call = CallRequest(
-        caller_id=session["user_id"], receiver_id=friend_id, room_id=room_id
-    )
-    db.session.add(call)
-    db.session.commit()
-    return jsonify({"room_id": room_id})
-
-
-@app.route("/check_call")
-def check_call():
-    if "user_id" not in session:
-        return "", 403
-
-    call = CallRequest.query.filter_by(
-        receiver_id=session["user_id"], active=True
-    ).first()
-    if call:
-        return jsonify(
-            {
-                "caller": User.query.get(call.caller_id).username,
-                "caller_id": call.caller_id,
-                "accepted": call.accepted,
-                "room_id": call.room_id,
-            }
-        )
-    return jsonify({})
-
-
-@app.route("/call_status/<int:receiver_id>")
-def call_status(receiver_id):
-    if "user_id" not in session:
-        return "", 403
-
-    call = CallRequest.query.filter_by(
-        caller_id=session["user_id"], receiver_id=receiver_id, active=True
-    ).first()
-    if call:
-        return jsonify(
-            {"accepted": call.accepted, "active": call.active, "room_id": call.room_id}
-        )
-    return jsonify({"accepted": None, "active": False})
-
-
-from flask import jsonify
-
-
-@app.route("/call_room/<room_id>")
-def call_room(room_id):
-    if "user_id" not in session:
-        return redirect(url_for("auth"))
-
-    call = CallRequest.query.filter_by(room_id=room_id, active=True).first()
-    if not call:
-        return "Call not found or expired.", 404
-
-    return render_template("call_room.html", room_id=room_id)
-
-
-@app.route("/accept_call/<int:caller_id>", methods=["POST"])
-def accept_call(caller_id):
-    if "user_id" not in session:
-        return "", 403
-
-    call = CallRequest.query.filter_by(
-        caller_id=caller_id, receiver_id=session["user_id"], active=True
-    ).first()
-    if call:
-        call.accepted = True
-        db.session.commit()
-        return jsonify({"redirect": url_for("call_room", room_id=call.room_id)})
-    return jsonify({"error": "Call not found"}), 404
-
-
-@app.route("/decline_call/<int:caller_id>", methods=["POST"])
-def decline_call(caller_id):
-    if "user_id" not in session:
-        return "", 403
-
-    call = CallRequest.query.filter_by(
-        caller_id=caller_id, receiver_id=session["user_id"], active=True
-    ).first()
-    if call:
-        call.accepted = False
-        call.active = False
-        db.session.commit()
-        return "Declined", 200
-    return "Call not found", 404
-
-
-@app.route("/call_page/<int:friend_id>")
-def call_page(friend_id):
-    if "user_id" not in session:
-        return redirect(url_for("auth"))
-
-    friend = User.query.get_or_404(friend_id)
-    return render_template("call_page.html", friend=friend)
 
 
 @app.route("/groups")
@@ -667,9 +564,6 @@ def group_detail(group_id):
     )
 
 
-from datetime import datetime
-
-
 @app.route("/groups/<int:group_id>/event", methods=["POST"])
 def add_group_event(group_id):
     if "user_id" not in session:
@@ -705,9 +599,6 @@ def send_group_message(group_id):
     )
     db.session.commit()
     return redirect(url_for("group_detail", group_id=group_id))
-
-
-from flask import render_template_string
 
 
 @app.route("/groups/<int:group_id>/chat_feed")
@@ -822,9 +713,6 @@ def create_post():
     db.session.add(new_post)
     db.session.commit()
     return redirect(url_for("index"))
-
-
-from datetime import datetime, timedelta
 
 
 @app.route("/post_action/<int:post_id>/<string:action>")
