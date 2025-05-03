@@ -11,7 +11,7 @@ from functools import wraps
 import dotenv
 import requests
 import stripe
-from flask import (Flask, render_template, request, redirect, url_for, session,
+from flask import (Blueprint, Flask, render_template, request, redirect, url_for, session,
                    jsonify, abort, render_template_string)
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit, join_room
@@ -288,6 +288,24 @@ class CallRequest(db.Model):
     started_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class TraderPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    images = db.relationship('TraderImage', backref='post', lazy=True)
+    
+    user = db.relationship("User", backref="trader_posts")
+
+
+class TraderImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey("trader_post.id"))
+    image_url = db.Column(db.String(255), nullable=False)
+
+
+
 # ---------------------- ROUTES ----------------------
 
 
@@ -303,6 +321,83 @@ def index():
         post.comments = Comment.query.filter_by(post_id=post.id).all()
     user = User.query.get(session["user_id"])
     return render_template("index.html", user=user, posts=posts)
+
+
+UPLOAD_FOLDER = 'static/trader'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+from flask import current_app
+
+from flask import request
+from sqlalchemy import or_
+
+@app.route("/trader")
+def trader_market():
+    q = request.args.get("q", "")
+    sort = request.args.get("sort", "newest")
+
+    query = TraderPost.query
+
+    # Search filter
+    if q:
+        query = query.filter(or_(
+            TraderPost.title.ilike(f"%{q}%"),
+            TraderPost.description.ilike(f"%{q}%")
+        ))
+
+    # Sort filter
+    if sort == "oldest":
+        query = query.order_by(TraderPost.created_at.asc())
+    elif sort == "az":
+        query = query.order_by(TraderPost.title.asc())
+    elif sort == "za":
+        query = query.order_by(TraderPost.title.desc())
+    else:  # default to newest
+        query = query.order_by(TraderPost.created_at.desc())
+
+    posts = query.all()
+    return render_template("trader.html", posts=posts)
+
+
+
+@app.route("/trader/new", methods=["GET", "POST"])
+def create_trader_post():
+    if "user_id" not in session:
+        return redirect(url_for("auth"))
+
+    if request.method == "POST":
+        title = request.form["title"]
+        description = request.form["description"]
+        files = request.files.getlist("images")
+
+        post = TraderPost(
+            title=title,
+            description=description,
+            user_id=session["user_id"]
+        )
+        db.session.add(post)
+        db.session.commit()
+
+        # ✅ FIXED: save path is now exactly in static/trader/
+        save_dir = os.path.join(current_app.static_folder, "trader")
+        os.makedirs(save_dir, exist_ok=True)
+
+        for file in files:
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                unique_name = secrets.token_hex(8) + "_" + filename
+                filepath = os.path.join(save_dir, unique_name)
+                file.save(filepath)
+
+                image = TraderImage(post_id=post.id, image_url=unique_name)
+                db.session.add(image)
+
+        db.session.commit()
+        return redirect(url_for("trader_market"))
+
+    return render_template("trader_post.html")
+
+
 
 
 @app.route("/marketplace", methods=["GET", "POST"])

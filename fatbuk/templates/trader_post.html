@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Post to Trader{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trader.css') }}">
+
+<div class="trader-post-form">
+    <h2>Create New Trader Listing</h2>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('create_trader_post') }}">
+        <input type="text" name="title" placeholder="Item title" required>
+        <textarea name="description" placeholder="Describe your item..." required></textarea>
+        <input type="file" name="images" multiple accept="image/*" required>
+        <button type="submit">Post Listing</button>
+    </form>
+</div>
+{% endblock %}

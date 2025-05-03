@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Trader - Marketplace{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trader.css') }}">
+
+<div class="trader-header">
+    <h1>🛒 Trader Marketplace</h1>
+    <a href="{{ url_for('create_trader_post') }}" class="create-btn">+ New Listing</a>
+</div>
+
+<!-- 🔍 Search + Sort -->
+<form method="GET" action="{{ url_for('trader_market') }}" class="trader-search-form">
+    <input type="text" name="q" placeholder="Search listings..." value="{{ request.args.get('q', '') }}">
+    <select name="sort">
+        <option value="newest" {% if request.args.get('sort')=='newest' %}selected{% endif %}>Newest First</option>
+        <option value="oldest" {% if request.args.get('sort')=='oldest' %}selected{% endif %}>Oldest First</option>
+        <option value="az" {% if request.args.get('sort')=='az' %}selected{% endif %}>Title A-Z</option>
+        <option value="za" {% if request.args.get('sort')=='za' %}selected{% endif %}>Title Z-A</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+<div class="trader-listings">
+    {% for post in posts %}
+    <div class="trader-post">
+        <div class="user-bubble">
+            <img
+                src="{{ url_for('static', filename='avatars/' + (post.user.profile_picture or 'default-avatar.png')) }}">
+            <a href="{{ url_for('user_profile', user_id=post.user.id) }}">{{ post.user.username }}</a>
+        </div>
+
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description }}</p>
+
+        <div class="image-gallery">
+            {% for image in post.images %}
+            <img src="{{ url_for('static', filename='trader/' + image.image_url) }}">
+            {% endfor %}
+        </div>
+
+        <p class="posted-on">📅 {{ post.created_at.strftime('%b %d, %Y at %I:%M %p') }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

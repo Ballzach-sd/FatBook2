@@ -1,0 +1,122 @@
+.trader-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2rem auto 1rem;
+    width: 95%;
+    color: white;
+}
+
+.trader-header h1 {
+    margin: 0;
+}
+
+.create-btn {
+    background-color: #238636;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.create-btn:hover {
+    background-color: #2ea043;
+}
+
+/* Search + Sort Form */
+.trader-search-form {
+    width: 95%;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.trader-search-form input,
+.trader-search-form select {
+    padding: 0.5rem;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background-color: #0d1117;
+    color: white;
+}
+
+.trader-search-form button {
+    background-color: #238636;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.trader-search-form button:hover {
+    background-color: #2ea043;
+}
+
+/* Listing cards */
+.trader-listings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.trader-post {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 1rem;
+    color: #c9d1d9;
+}
+
+.user-bubble {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-bubble img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #30363d;
+}
+
+.user-bubble a {
+    color: #58a6ff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.user-bubble a:hover {
+    text-decoration: underline;
+}
+
+/* Image gallery */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.image-gallery img {
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    object-fit: cover;
+}
+
+/* Footer text */
+.posted-on {
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-top: 0.75rem;
+}

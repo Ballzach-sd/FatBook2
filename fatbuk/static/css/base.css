@@ -7,6 +7,8 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #0d1117;
     color: #c9d1d9;
+    scrollbar-width: thin;
+    scrollbar-color: #30363d #0d1117;
 }
 
 a {
@@ -19,24 +21,52 @@ a:hover {
 }
 
 /* ===============================
+   Feed Container
+================================= */
+
+.feed-container {
+    height: calc(100vh - 180px);
+    width: 95%;
+    margin: 2rem auto;
+    overflow-y: auto;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.25rem;
+    scroll-behavior: smooth;
+    border-top: 1px solid #30363d;
+}
+
+/* Scrollbar */
+.feed-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.feed-container::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.feed-container::-webkit-scrollbar-thumb {
+    background-color: #30363d;
+    border-radius: 10px;
+}
+
+/* ===============================
    Post Composer (Create Post)
 ================================= */
 
-
-.post-form,
 .composer-card {
     background-color: #161b22;
     border: 1px solid #30363d;
     border-radius: 12px;
     padding: 1rem 1.25rem;
+    margin: 0 auto 2rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    margin-bottom: 1.5rem;
-    width: 95%;
+    max-width: 85%;
 }
 
-.post-form textarea,
 .composer-card textarea {
-    width: 97%;
+    width: 97.5%;
     min-height: 100px;
     background-color: #0d1117;
     color: #c9d1d9;
@@ -58,11 +88,10 @@ a:hover {
     justify-content: flex-end;
 }
 
-.composer-actions button,
-.post-form button {
+.composer-actions button {
     background-color: #238636;
     border: none;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 1.25rem;
     color: white;
     border-radius: 6px;
     cursor: pointer;
@@ -70,44 +99,8 @@ a:hover {
     transition: background-color 0.3s;
 }
 
-.composer-actions button:hover,
-.post-form button:hover {
+.composer-actions button:hover {
     background-color: #2ea043;
-}
-
-/* ===============================
-   Feed Container
-================================= */
-
-.feed-container {
-    height: 500px;
-    width: 95%;
-    margin: 2rem auto;
-    overflow-y: auto;
-    padding-right: 8px;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 1.25rem;
-    scroll-behavior: smooth;
-    border-top: 1px solid #30363d;
-}
-
-
-
-/* Scrollbar */
-.feed-container::-webkit-scrollbar {
-    width: 8px;
-}
-.feed-container::-webkit-scrollbar-track {
-    background: #0d1117;
-}
-.feed-container::-webkit-scrollbar-thumb {
-    background-color: #30363d;
-    border-radius: 10px;
-}
-body {
-    scrollbar-width: thin;
-    scrollbar-color: #30363d #0d1117;
 }
 
 /* ===============================
@@ -121,6 +114,7 @@ body {
     padding: 1rem 1.25rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.2s ease;
+    max-width: 100%;
 }
 
 .post-card:hover {
@@ -150,7 +144,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: #c9d1d9;
 }
 
 .post-user-meta small {
@@ -158,13 +151,12 @@ body {
     font-size: 0.8rem;
 }
 
-.composer-card,
-.post-card {
-    max-width: 100%;
-    font-size: 0.95rem;
-    padding: 0.85rem 1rem;
+.muted-tag {
+    color: #f85149;
+    font-size: 0.75rem;
+    font-style: italic;
+    margin-left: 0.5rem;
 }
-
 
 /* ===============================
    Post Content
@@ -190,20 +182,9 @@ body {
 .post-image-container img {
     max-width: 100%;
     max-height: 300px;
-    width: auto;
-    height: auto;
     object-fit: contain;
-    display: inline-block;
     border-radius: 6px;
 }
-
-.muted-tag {
-    color: #f85149;
-    font-size: 0.75rem;
-    font-style: italic;
-    margin-left: 0.5rem;
-}
-
 
 /* ===============================
    Reactions
@@ -212,7 +193,8 @@ body {
 .post-actions {
     margin-top: 0.75rem;
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     font-size: 1.05rem;
     font-weight: bold;
 }
@@ -222,7 +204,7 @@ body {
     color: #58a6ff;
     border: none;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 4px;
     transition: background 0.2s;
 }

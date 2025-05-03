@@ -3,3 +3,6 @@ fatbuk/.env
 instance/fatbuk.db
 instance/fatbuk.db
 /instance
+instance/fatbuk.db
+/instance
+/fatbuk/static/trader
